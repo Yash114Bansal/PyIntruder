@@ -99,6 +99,10 @@ def req_get(list_payload):
         loading_bar["value"] += percent_increase*4
         root.update_idletasks()
         second_frame.update_idletasks()
+        
+        geo = str(850+1)+"x700"
+        button_place.geometry(geo)
+        button_place.geometry("850x700")
 
 def extractrequest(web_request):
     g=open("temp.txt",'w+')
@@ -180,7 +184,7 @@ def mainattack():
     prefix_var = prefix.get()
     suffix_var = suffix.get()
     button_place = Toplevel()
-    button_place.geometry("700x700")
+    button_place.geometry("850x700")
     Label(button_place,text="Attacking").pack()
     loading_bar=Progressbar(button_place,orient=HORIZONTAL,length=400,mode="determinate")
     loading_bar.pack()
