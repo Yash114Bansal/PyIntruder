@@ -10,7 +10,8 @@ import base64
 import binascii
 from tkinter.ttk import Progressbar,Scrollbar
 from requests.api import head
-
+import itertools
+from tkinter.scrolledtext import ScrolledText
 root = Tk()
 root.title("PyIntruder v0.3")
 root.geometry("1100x650")
@@ -42,37 +43,71 @@ var_to_numbers = 0
 var_step_numbers = 1
 var_min_length = 1
 var_max_length = 1
+var_bruteforce_charset=""
 root_filename = ""
 button_place = ''
+payload_list=""
 loading_bar=""
 second_frame=""
 uen = StringVar()
 urlencode_var=""
 percent_increase=0
+h=0
 encoding_var = ""
 option_var = ""
 prefix_var = ""
 suffix_var = ""
+listbox=""
+searchbox=""
 maindict = {}
-def show_data(payload):
-    global maindict
+def update(data):
+    global listbox,maindict
+    listbox.delete(0,END)
+    for m in data:
+        listbox.insert(END,m)
+
+def search(event):
+    global searchbox,maindict
+    typed_text=searchbox.get()
+    data_find=[]
+    if typed_text == "":
+        data_find=[l for l in maindict]
+    else:
+        for l in maindict:
+            if typed_text.lower() in maindict[l].lower():
+                data_find.append(l)
+
+    update(data_find)
+
+def show_data(event):
+    global maindict,listbox
+    payload=listbox.get(ANCHOR)
+    payload=payload[0:15].strip()
     dta = maindict[payload]
-    messagebox.showinfo(title='Details', message=dta)
-
-
+    x=Toplevel()
+    x.geometry("900x600")
+    x.title("Response")
+    textbox=ScrolledText(x,wrap=WORD,height=34,width=120,fg='#660066')
+    textbox.pack()
+    textbox.insert(INSERT,dta)
+    textbox.config(state=DISABLED)
+    x.minsize(900,600)
+    x.maxsize(900,600)
 def req_get(list_payload):
         global button_place,maindict,root
         global var_url
         global var_headers
-        global var_data
+        global var_data,var_req_method
         global urlencode_var
         global encoding_var
-        global option_var
-        global prefix_var,suffix_var,percent_increase,loading_bar,second_frame
+        global option_var,listbox
+        global prefix_var,suffix_var,percent_increase,loading_bar,second_frame,payload_list,h
+        tempvar=payload_list.index(list_payload)
         list_payload=str(list_payload)
-        
+        tempvariable=list_payload
         if option_var == 1:
             list_payload = prefix_var+list_payload+suffix_var
+            tempvariable=list_payload
             if encoding_var == "Base64":
                 list_payload = base64.b64encode(list_payload.encode()).decode()
             elif encoding_var == "Hex":
@@ -90,26 +125,31 @@ def req_get(list_payload):
         reqdata = var_data.replace("@@@@@@",list_payload)
         if urlencode_var == "url_encode":
             reqdata=urllib.parse.quote(reqdata, safe='')
-        for i in var_headers:
-            var_headers[i] = var_headers[i].replace("@@@@@@",list_payload)
-        r =requests.get(var_url,params=reqdata,headers=var_headers)
+        var_headers_temp=var_headers.copy()
+        for i in var_headers_temp:
+            var_headers_temp[i] = var_headers_temp[i].replace("@@@@@@",list_payload)
+        if var_req_method=="GET":
+            r =requests.get(var_url,params=reqdata,headers=var_headers_temp)
+        elif var_req_method=="POST":
+            r=requests.post(var_url,data=reqdata,headers=var_headers_temp)
         maindict[list_payload] = r.text
-        txt=list_payload+" "*(97-len(list_payload))+str(len(r.text))+" "*(46-len(str(len(r.text))))+str(r.status_code)
-        Button(second_frame,text=txt,command=lambda: show_data(list_payload)).pack(side=TOP,anchor="w")
-        loading_bar["value"] += percent_increase*4
+        txt=tempvariable+" "*(97-len(list_payload))+str(len(r.text))+" "*(40-len(str(len(r.text))))+str(r.status_code)
+        listbox.insert(END,txt)
+        h+=percent_increase
+        loading_bar["value"] = h
         root.update_idletasks()
-        second_frame.update_idletasks()
-        
-        geo = str(850+1)+"x700"
-        button_place.geometry(geo)
-        button_place.geometry("850x700")
 
 def extractrequest(web_request):
     g=open("temp.txt",'w+')
     g.write(web_request)
     g.close()
     f=open("temp.txt","r")
-    listdata=f.readlines()
+    listdata1=f.readlines()
+    listdata=[]
+    for i in listdata1:
+      tv=str(i).replace("\n","")
+      if tv!="":
+        listdata.append(tv)
     req_type=listdata[0]
     host=listdata[1]
     headerslist={}
@@ -144,7 +184,7 @@ def extractrequest(web_request):
 
     f.close()
     url="http://"+host[5:].strip()+fullurl.strip()
-
+    headerslist.pop("",None)
     return req_method,url,headerslist,data
 
 
@@ -156,8 +196,8 @@ def mainattack():
     global var_req_method
     global urlencode_var
     global encoding_var
-    global option_var
-    global prefix_var,suffix_var,loading_bar,second_frame
+    global option_var,listbox,searchbox
+    global prefix_var,suffix_var,loading_bar,second_frame,h
     main_request = Request_Text_Area.get("1.0",END)
     var_req_method,var_url,var_headers,var_data = extractrequest(main_request)
     for temp_replace in var_headers:
@@ -184,29 +224,36 @@ def mainattack():
     prefix_var = prefix.get()
     suffix_var = suffix.get()
     button_place = Toplevel()
-    button_place.geometry("850x700")
+    button_place.geometry("700x700")
+    button_place.title("Attack Box")
+    button_place.minsize(700,700)
+    button_place.maxsize(700,700)
     Label(button_place,text="Attacking").pack()
     loading_bar=Progressbar(button_place,orient=HORIZONTAL,length=400,mode="determinate")
     loading_bar.pack()
-    main_frame = Frame(button_place)
-    main_frame.pack(fill=BOTH,expand=1)
-
-    mycanvas= Canvas(main_frame)
-    mycanvas.pack(side=LEFT,fill=BOTH,expand=1)
-    my_scrollbar=ttk.Scrollbar(main_frame,orient=VERTICAL,command=mycanvas.yview)
-    my_scrollbar.pack(side=RIGHT,fill=Y)
-    mycanvas.configure(yscrollcommand=my_scrollbar.set)
-    mycanvas.bind('<Configure>' , lambda e: mycanvas.configure(scrollregion=mycanvas.bbox("all")))
-    second_frame=Frame(mycanvas)
-    mycanvas.create_window((0,0), window=second_frame,anchor="nw")
     Label(button_place,text="Payload"+" "*90+"Length"+" "*40+"Status Code",borderwidth=2,relief=SOLID).pack(side=TOP,anchor="w")
-
+    main_frame = Frame(button_place)
+    my_scrollbar=ttk.Scrollbar(main_frame,orient=VERTICAL)
+    main_frame.pack(fill=BOTH,expand=1)
+    listbox=Listbox(main_frame,width=80,height=33,yscrollcommand=my_scrollbar.set)
+    my_scrollbar.config(command=listbox.yview)
+    my_scrollbar.pack(side=RIGHT,fill=Y)
+    listbox.bind("<Double-1>",show_data)
+    searchbox=Entry(button_place,width=45)
+    listbox.pack()
+    Label(button_place,text="Search :",fg="green").place(x=210,y=667)
+    searchbox.place(x=280,y=665)
+    searchbox.bind("<KeyRelease>",search)
+    
+    global payload_list
     if attack_type == "Numbers":
         global var_from_numbers
         global var_to_numbers
         global var_step_numbers
         global percent_increase
+        payload_list=[x for x in range(var_from_numbers,var_to_numbers+1,var_step_numbers)]
         percent_increase=100/len([x for x in range(var_from_numbers,var_to_numbers+1,var_step_numbers)])
+        h=0
         execute=ThreadPoolExecutor(max_workers=Threads_Button.get())
         execute.map(req_get,[x for x in range(var_from_numbers,var_to_numbers+1,var_step_numbers)])
         execute.shutdown(wait=False)
@@ -218,6 +265,18 @@ def mainattack():
         for i in pay:
             payload_list.append(i.rstrip("\n"))
         percent_increase=100/len(payload_list)
+        h=0
+        execute=ThreadPoolExecutor(max_workers=Threads_Button.get())
+        execute.map(req_get,payload_list)
+        execute.shutdown(wait=False)
+    elif attack_type=="BruteForce":
+        global var_bruteforce_charset,var_max_length,var_min_length
+        payload_list=[]
+        for x in range(var_min_length,var_max_length+1):
+            for y in itertools.product(var_bruteforce_charset,repeat=x):
+                payload_list.append("".join(y))
+        percent_increase=100/len(payload_list)
+        h=0
         execute=ThreadPoolExecutor(max_workers=Threads_Button.get())
         execute.map(req_get,payload_list)
         execute.shutdown(wait=False)
@@ -227,7 +286,7 @@ def start_attack():
     global var_step_numbers
     global var_min_length
     global var_max_length
-
+    global var_bruteforce_charset
     attack_type = combo_box1.get()
     try:
         attack_threads = Threads_Button.get()
@@ -257,8 +316,9 @@ def start_attack():
     elif attack_type == "BruteForce":
         try:
             var_min_length = int(min_entry.get())
-            var_max_numbers = int(max_entry.get())
-            if var_min_length < 1 or var_max_numbers < 1:
+            var_max_length = int(max_entry.get())
+            var_bruteforce_charset=charset.get()
+            if var_min_length < 1 or var_max_length < 1:
                 raise greater_zero
             if "§" not in Request_Text_Area.get("1.0",END):
                 raise no_position
@@ -303,9 +363,11 @@ def clear_position():
 
 def paste():
     pst = Request_Text_Area.index(INSERT)
-    clip = root.clipboard_get()
-    Request_Text_Area.insert(pst, clip)
-
+    try:
+        clip = root.clipboard_get()
+        Request_Text_Area.insert(pst, clip)
+    except:
+        messagebox.showwarning("Warning","Nothing is in the clipboard")
 # Function for Clear button
 
 
@@ -353,7 +415,6 @@ def comboclk(event):
        step_entry.config(state=NORMAL)
        
 # Function for Help menu item
-
 
 def info():
     msg = '''About PyIntruder v0.6  
@@ -547,7 +608,6 @@ Payloads = [
     "BruteForce"
 ]
 
-
 # ComboBox
 
 combo_box1 = ttk.Combobox(root, values=Payloads)
@@ -568,7 +628,6 @@ Encodings = [
     "Hex",
     "ASCII Numbers"
 ]
-
 
 # ComboBox 2
 
