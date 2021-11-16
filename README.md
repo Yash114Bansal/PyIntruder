@@ -1,13 +1,15 @@
-# PyIntruder
+# PyIntruder - A Powerful Intruder Written in Python
 ![Asset 2](https://user-images.githubusercontent.com/52795867/141934444-230c8d6e-aee6-4471-883a-2165642e0bbf.png)
 
-# PyIntruder - A Powerful Intruder Written in Python
-![[Response.png]]
+
+# user-Interface
+![Response2](https://user-images.githubusercontent.com/52795867/141938948-bafabb11-c961-4ce0-a976-cee7d468b29e.png)
 
 ## Usage
 Simply use it as a tool to bruteforce faster than you normally did it with Burp Suite Community Edition.
 Select the parameter you want to test for and click on add position.
-![[Numbers.png]]
+![Numbers](https://user-images.githubusercontent.com/52795867/141938981-c4336845-9d38-4045-838d-995a49861374.png)
+
 
 ## Features Till Now
 ### Brute Force
@@ -21,7 +23,8 @@ Select the parameter you want to test for and click on add position.
 - ASCII Numbers
 
 ### Example of Attackbox:
-![[AttackBoxandResponse.png]]
+![AttackBoxandResponse](https://user-images.githubusercontent.com/52795867/141939005-875fa1e7-0e5c-4dd8-87af-4b1490f2036a.png)
+
 
 Looking forward for further contributions as it is an open-source project. We hope that the community will enjoy experimenting with it and help us to improve the application.
 
