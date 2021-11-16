@@ -3,7 +3,7 @@
 
 
 ## User-Interface
-![Response2](https://user-images.githubusercontent.com/52795867/141938948-bafabb11-c961-4ce0-a976-cee7d468b29e.png)
+![Response](https://user-images.githubusercontent.com/52795867/141939748-798b33fc-e812-4ded-937b-a8aad3e1fdd0.png)
 
 ## Usage
 Simply use it as a tool to bruteforce faster than you normally did it with Burp Suite Community Edition.
