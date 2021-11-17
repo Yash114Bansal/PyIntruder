@@ -2,8 +2,10 @@
 ![Asset 2](https://user-images.githubusercontent.com/52795867/141934444-230c8d6e-aee6-4471-883a-2165642e0bbf.png)
 
 #Installation
->git clone https://github.com/Yash114Bansal/PyIntruder \n
->cd PyIntruder \n
+>git clone https://github.com/Yash114Bansal/PyIntruder
+
+>cd PyIntruder
+
 >python3 installer.py
 
 ## User-Interface
