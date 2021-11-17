@@ -20,7 +20,7 @@ class color:
 colour=color()
 check_root=subprocess.run("id",shell=True,capture_output=True)
 if "root" not in str(check_root).lower():
-        colour.red("Please run as root")
+        colour.red("Please run as root!!")
         os._exit(0)
 try:
         shutil.rmtree("/opt/PyIntruder")
