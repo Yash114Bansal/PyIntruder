@@ -1,3 +1,4 @@
+#!/bin/python3
 from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
@@ -8,6 +9,7 @@ from tkinter.ttk import Progressbar, Scrollbar
 from tkinter.filedialog import asksaveasfile
 from concurrent.futures import ThreadPoolExecutor
 from json import dumps
+from sys import path
 import requests
 from urllib.parse import quote
 from base64 import b64encode
@@ -15,23 +17,20 @@ from binascii import hexlify
 from requests.api import head
 from itertools import product
 from os import remove
+path.insert(1,"/opt/PyIntruder")
 from ShowJson import *
 root = Tk()
 root.title("PyIntruder")
 root.geometry("1100x650")
 root.minsize(1100, 650)
 root.maxsize(1100, 650)
-img = PhotoImage(file='PyI.png')
+img = PhotoImage(file='/opt/PyIntruder/PyI.png')
 root.tk.call('wm', 'iconphoto', root._w, img)
 
 # Exception classes
 
 
 class Unknown_request(Exception):
-    pass
-
-
-class no_threads(Exception):
     pass
 
 
@@ -67,6 +66,7 @@ uen = StringVar()
 urlencode_var = ""
 percent_increase = 0
 h = 0
+count=0
 encoding_var = ""
 option_var = ""
 prefix_var = ""
@@ -130,11 +130,9 @@ def save():
         messagebox.showwarning("Warning", "Permission Denied")
     file_name.close()
 
-#natas18:xvKIqDjy4OPv7wCRgDlmj0pFsCsDjhdP
-
 def req_get(list_payload):
     #Windows
-    global button_place, root
+    global button_place, root,count
     #Request Material
     global var_url, var_headers, var_data, var_req_method,maindict
     #Encodings
@@ -186,7 +184,8 @@ def req_get(list_payload):
     maindict[list_payload] = [str(len(r.text)),str(r.status_code)+" "+StatusCodes[str(r.status_code)],r.text]
     response_headers = r.headers
     #Add Data In ListBox
-    txt = tempvariable+" "*(94-len(list_payload)-len(StatusCodes[str(r.status_code)])) + str(len(r.text)) + " "*(40-len(str(len(r.text)))) + str(r.status_code)+" "+StatusCodes[str(r.status_code)]
+    count+=1
+    txt = str(count)+" "*10+tempvariable+" "*(84-len(list_payload)-len(str(count))-len(StatusCodes[str(r.status_code)])) + str(len(r.text)) + " "*(40-len(str(len(r.text)))) + str(r.status_code)+" "+StatusCodes[str(r.status_code)]
     listbox.insert(END, txt)
     #Updating Progressbar
     h += percent_increase
@@ -309,7 +308,7 @@ def mainattack():
     #Adding LoadingBar
     loading_bar = Progressbar(button_place, orient=HORIZONTAL, length=400, mode="determinate")
     loading_bar.pack()
-    Label(button_place, text="Payload" + " "*90 + "Length"+" "*40 + "Status Code", borderwidth=2, relief=SOLID).pack(side=TOP, anchor="w")
+    Label(button_place, text="No."+" "*10 + "Payload" + " "*70 + "Length"+" "*40 + "Status Code", borderwidth=2, relief=SOLID).pack(side=TOP, anchor="w")
     main_frame = Frame(button_place)
     #Adding ScrollBar To It
     my_scrollbar = ttk.Scrollbar(main_frame, orient=VERTICAL)
@@ -372,22 +371,21 @@ def mainattack():
 def start_attack():
     global var_from_numbers,var_to_numbers,var_step_numbers
     global var_min_length,var_max_length
-    global var_bruteforce_charset
+    global var_bruteforce_charset,count
+    count=0
     attack_type = combo_box1.get()
-    try:
-        attack_threads = Threads_Button.get()
-        if attack_threads == 0:
-            raise no_threads
-    except no_threads:
-        messagebox.showwarning("Warning", "Please Select Some Threads")
-        return
+    attack_threads = Threads_Button.get()
     if attack_type == "Numbers":
         try:
             var_from_numbers = int(from_entry.get())
             var_to_numbers = int(to_entry.get())
             var_step_numbers = int(step_entry.get())
-            if var_to_numbers < 1 or var_step_numbers < 1:
+            if var_to_numbers < var_from_numbers:
+                if var_step_numbers > 0:
+                    var_step_numbers=-var_step_numbers
+            if var_step_numbers == 0:
                 raise greater_zero
+                
             if "§" not in Request_Text_Area.get("1.0", END):
                 raise no_position
             mainattack()
@@ -395,11 +393,8 @@ def start_attack():
         except ValueError:
             messagebox.showwarning("Warning", "Please enter numbers only")
             return
-
         except greater_zero:
-            messagebox.showwarning("Warning", "Enter Number Greater Than Zero")
-            return
-
+            messagebox.showwarning("Warning", "Please enter step greater than zero")
         except no_position:
             messagebox.showwarning("Warning", "Please Add Position in Box")
 
@@ -541,7 +536,7 @@ absolutely free of cost.
 
 
 def usage():
-    msg = "www.google.com"
+    msg = "Please Refer To https://github.com/Yash114Bansal/PyIntruder"
     help_window = Toplevel()
     help_lbl = Label(help_window, text=msg)
     help_lbl.pack()
@@ -590,7 +585,7 @@ Dummy_Options_Frame = Label(Options_Frame, text="",)
 Dummy_Options_Frame.grid(row=0, column=0)
 
 # Select Threads Button
-Threads_Button = Scale(root, from_=0, to=100, orient=HORIZONTAL)
+Threads_Button = Scale(root, from_=1, to=100, orient=HORIZONTAL)
 Threads_Button.place(x=960, y=32)
 
 Select_Threads_Label = Label(root, text="Select Threads", fg='green')
