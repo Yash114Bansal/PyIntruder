@@ -343,7 +343,7 @@ def mainattack():
 
     elif attack_type == "Wordlist":
         global root_filename
-        f1 = open(root_filename, "r")
+        f1 = open(root_filename, "r",errors="ignore")
         pay = f1.readlines()
         payload_list = []
         for i in pay:
