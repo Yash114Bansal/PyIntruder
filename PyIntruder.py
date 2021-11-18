@@ -105,7 +105,7 @@ def search(event):
 def show_data(event):
     global maindict, listbox,response_headers
     payload = listbox.get(ANCHOR)
-    payload = payload[0:15].strip()
+    payload = payload[7:20].strip()
     dta = maindict[payload][2]
     x = Toplevel()
     x.geometry("900x600")
