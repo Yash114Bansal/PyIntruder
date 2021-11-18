@@ -531,7 +531,8 @@ absolutely free of cost.
     
     Developed by:
         Yash Bansal
-        Sagnik Haldar'''
+        Sagnik Haldar
+        Also... 0day Was Here'''
     messagebox.showinfo(title='Details', message=msg)
 
 
