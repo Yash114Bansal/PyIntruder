@@ -32,6 +32,7 @@ try:
         colour.green("Creating files")
         os.system("mkdir /opt/PyIntruder")
         os.system("cp PyIntruder.py ShowJson.py PyI.png /opt/PyIntruder")
+        os.system("chmod 777 /opt/PyIntruder")
         os.system("chmod +x /opt/PyIntruder/PyIntruder.py")
 except:
 
