@@ -153,7 +153,7 @@ def req_get(list_payload):
 
         elif encoding_var == "ASCII Numbers":
             list_payload = ''.join(str(ord(c)) for c in list_payload)
-    #Encode -->Suffix/Prefix
+    #Encode -->Suffix/Prefix1
     elif option_var == 2:
         if encoding_var == "Base64":
             list_payload = b64encode(list_payload.encode()).decode()
@@ -345,9 +345,9 @@ def mainattack():
         global root_filename
         f1 = open(root_filename, "r",errors="ignore")
         pay = f1.readlines()
-        payload_list = []
-        for i in pay:
-            payload_list.append(i.rstrip("\n"))
+        payload_list = pay
+        #for i in pay:
+            #payload_list.append(i.rstrip("\n"))
         percent_increase = 100/len(payload_list)
         h = 0
         execute = ThreadPoolExecutor(max_workers=Threads_Button.get())
