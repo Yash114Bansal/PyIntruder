@@ -140,6 +140,8 @@ def req_get(list_payload):
     global option_var, listbox,StatusCodes,prefix_var, suffix_var, percent_increase, loading_bar, second_frame, payload_list, h,response_headers
     tempvar = payload_list.index(list_payload)
     list_payload = str(list_payload)
+    list_payload=list_payload.replace("\n",'')
+    list_payload=list_payload
     tempvariable = list_payload
     #Suffix/Prefix --> Encode
     if option_var == 1:
